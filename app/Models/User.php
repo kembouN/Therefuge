@@ -21,7 +21,15 @@ class User extends Authenticatable
         // 'name',
         'email',
         'password',
-        'trust_email'
+        'email_verified_at',
+        'last_connection',
+        'activated_account',
+        'activation_date',
+        'reminder_number',
+        'verification_code',
+        'id_type_compte',
+        'reset_question',
+        'rest_response'
     ];
 
     /**

@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Signature extends Model
 {
     use HasFactory;
+
+    protected $table = 'signatures';
+
+    protected $fillable = [
+        'id', 'cachet', 'id_compte', 'created_at', 'updated_at'
+    ];
 }

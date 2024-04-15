@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'stderr'],
             'ignore_exceptions' => false,
         ],
 
@@ -62,7 +62,7 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
-            'replace_placeholders' => true,
+            // 'replace_placeholders' => true,
         ],
 
         'daily' => [
@@ -70,7 +70,7 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
-            'replace_placeholders' => true,
+            // 'replace_placeholders' => true,
         ],
 
         'slack' => [
@@ -79,7 +79,7 @@ return [
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'critical'),
-            'replace_placeholders' => true,
+            // 'replace_placeholders' => true,
         ],
 
         'papertrail' => [
@@ -91,31 +91,49 @@ return [
                 'port' => env('PAPERTRAIL_PORT'),
                 'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
-            'processors' => [PsrLogMessageProcessor::class],
+            // 'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'stderr' => [
             'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
+            'level' => env(/*'LOG_LEVEL'*/ 'LOG_CONSOLE_LEVEL', 'debug'),
             'handler' => StreamHandler::class,
             'formatter' => env('LOG_STDERR_FORMATTER'),
+
+            'formatter_with' => [
+                'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+                'format_level' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+                'format_stack' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+                'ansi' => true,
+                'colors' => [
+                    'debug' => '36',   // Cyan
+                    'info' => '32',    // Green
+                    'notice' => '34',  // Blue
+                    'warning' => '33', // Yellow
+                    'error' => '31',   // Red
+                    'critical' => '31', // Red
+                    'alert' => '31',    // Red
+                    'emergency' => '31', // Red
+                ],
+            ],
+            
             'with' => [
                 'stream' => 'php://stderr',
             ],
-            'processors' => [PsrLogMessageProcessor::class],
+            // 'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),
-            'facility' => LOG_USER,
-            'replace_placeholders' => true,
+            // 'facility' => LOG_USER,
+            // 'replace_placeholders' => true,
         ],
 
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => env('LOG_LEVEL', 'debug'),
-            'replace_placeholders' => true,
+            // 'replace_placeholders' => true,
         ],
 
         'null' => [

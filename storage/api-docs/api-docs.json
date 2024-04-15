@@ -1,0 +1,804 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "DOCUMENTATION DE L'API DU PROJET MESHUTE",
+        "description": "MESHUTE est un projet de gestion de ressources immobilières qui a pour principal but de rendre leur accès facile",
+        "contact": {
+            "email": "knk.towork@gmail.com"
+        },
+        "license": {
+            "name": "Apache2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Url de la documentation swagger Meshute"
+        }
+    ],
+    "paths": {
+        "/users/create_account": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Création d'un compte utilisateur",
+                "description": "Créer un compte utilisateur (gérant ou client) en remplisant les champs requis à cet effet",
+                "operationId": "createUserAccount",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "email",
+                                    "date_naissance",
+                                    "sexe",
+                                    "telephone",
+                                    "num_cni"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "description": "Nom de l'utilisateur qui souhaite créer un compte",
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "description": "Prenom de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Adresse mail de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "date_naissance": {
+                                        "description": "Date de naissance de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "sexe": {
+                                        "description": "Le sexe de l'utilisateur à valeur booléenne(1 pour la femme, 0 pour l'homme)",
+                                        "type": "string"
+                                    },
+                                    "telephone": {
+                                        "description": "Le numéro de téléphone, ne prend en compte que des chiffres et entre 9 et 12 caractères",
+                                        "type": "string"
+                                    },
+                                    "profession": {
+                                        "description": "La profession est et uniquement prise en compte lorsqu'il s'agit d'un compte gérant et est une valeur booléenne (1 si l'utilisateur est agent immobilier, 0 sinon)",
+                                        "type": "string"
+                                    },
+                                    "nationalite": {
+                                        "description": "La nationalité est optionnelle pour cette version de l'api",
+                                        "type": "string"
+                                    },
+                                    "num_cni": {
+                                        "description": "Le numéro de la carte d'identité est obligatoire pour tout compte",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "Le mot de passe de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "id_type_compte": {
+                                        "description": "L'identifiant du type de compte à créer",
+                                        "type": "string"
+                                    },
+                                    "question": {
+                                        "description": "L'utilisateur renseigne une question qui aidera à réinitialiser son mot de passe en cas de perte du précédant",
+                                        "type": "string"
+                                    },
+                                    "reponse": {
+                                        "description": "L'utilisateur renseigne une réponse à la question qu'il a lui même renseigné",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Création du compte réussie, vérifiez votre adresse mail"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable"
+                    }
+                }
+            }
+        },
+        "/user/{user_id}/check_email/{codeverification}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Vérification de l'adresse e-mail",
+                "description": "L'utilisateur reçoit un code unique qu'il renseigne lui permettant de vérifier son adresse e-mail",
+                "operationId": "VerifyEmail",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "Identifiant unique de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "codeverification",
+                        "in": "path",
+                        "description": "Le code unique de vérification envoyé à l'utilisateur via un e-mail",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ",Vérification de votre adresse mail effectuée"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable"
+                    }
+                }
+            }
+        },
+        "/user/{user_id}/account-activate": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Activer un compte utilisateur",
+                "description": "Lorsque qu'un compte gérant est créé, il est nécessaire que l'administrateur valide le compte pour qu'il soit actif",
+                "operationId": "accountActivation",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "L'identifiant unique de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Compte activé"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Connexion au compte utilisateur",
+                "description": "L'utilisateur renseigne son adaresse e-mail et son mot de passe pour se connecter à son compte",
+                "operationId": "userLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/user/reset-password": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Réinitialiser le mot de passe",
+                "description": "En cas de perte du mot de passe, l'utilisateur peut rénitialiser et en obtenir un nouveau via un mail. Il suffit de renseigner la question et la réponse de réinitialisation qu'il à fourni lors de la création de compte",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "question",
+                                    "reponse"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Adresse e-mail de l'utilisateur",
+                                        "type": "string"
+                                    },
+                                    "question": {
+                                        "description": "Question de réinitialisation du mot de passe",
+                                        "type": "string"
+                                    },
+                                    "reponse": {
+                                        "description": "Réponse à la question de réinitialisation",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe réinitialisé"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable"
+                    }
+                }
+            }
+        },
+        "/user/change-password": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Changer de mot de passe",
+                "description": "Si l'utilisateur souhaite changer de mot de passe pour un plus robuste",
+                "operationId": "changePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_compte",
+                                    "ancien_passe",
+                                    "nouveau_passe",
+                                    "passe_confirmation"
+                                ],
+                                "properties": {
+                                    "id_compte": {
+                                        "type": "string"
+                                    },
+                                    "ancien_passe": {
+                                        "type": "string"
+                                    },
+                                    "nouveau_passe": {
+                                        "type": "string"
+                                    },
+                                    "passe_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe renouvellé"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/update-info/account/{id_compte}": {
+            "put": {
+                "tags": [
+                    "Compte"
+                ],
+                "summary": "Mise à jour des informations personnelles de l'utilisateur",
+                "description": "La gestion du compte utilisateur est principalement centrée sur la mise à jour des informations personnelles",
+                "operationId": "updateAccountData",
+                "parameters": [
+                    {
+                        "name": "id_compte",
+                        "in": "path",
+                        "description": "Identifiant du compte utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "date_naissance",
+                                    "sexe",
+                                    "telephone"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "date_naissance": {
+                                        "type": "string"
+                                    },
+                                    "sexe": {
+                                        "type": "string"
+                                    },
+                                    "telephone": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "num_cni": {
+                                        "type": "string"
+                                    },
+                                    "cni_recto": {
+                                        "type": "string"
+                                    },
+                                    "cni_verso": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe renouvellé"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable"
+                    }
+                },
+                "security": {
+                    "sanctum": {
+                        "0": []
+                    }
+                }
+            }
+        },
+        "/logement": {
+            "post": {
+                "tags": [
+                    "Logements"
+                ],
+                "summary": "Ajouter un nouveau logement",
+                "description": "Fonctionnalité permettant au gérant d'ajouter un nouveau logement",
+                "operationId": "addLogement",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_gerant",
+                                    "type_logement",
+                                    "description",
+                                    "largeur",
+                                    "longueur",
+                                    "valeur",
+                                    "ville",
+                                    "quartier"
+                                ],
+                                "properties": {
+                                    "id_gerant": {
+                                        "type": "string"
+                                    },
+                                    "type_logement": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "largeur": {
+                                        "type": "string"
+                                    },
+                                    "longueur": {
+                                        "type": "string"
+                                    },
+                                    "valeur": {
+                                        "type": "string"
+                                    },
+                                    "pays": {
+                                        "type": "string"
+                                    },
+                                    "ville": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "string"
+                                    },
+                                    "quartier": {
+                                        "type": "string"
+                                    },
+                                    "rue": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Logement ajouté"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/logement/{id_logement}": {
+            "put": {
+                "tags": [
+                    "Logements"
+                ],
+                "summary": "Mise à jour",
+                "description": "Mettre à jour les informations d'un logement spécifique",
+                "operationId": "updateLogement",
+                "parameters": [
+                    {
+                        "name": "id_logement",
+                        "in": "path",
+                        "description": "Identifiant du logement",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_gerant",
+                                    "type_logement",
+                                    "description",
+                                    "largeur",
+                                    "longueur",
+                                    "valeur",
+                                    "ville",
+                                    "quartier"
+                                ],
+                                "properties": {
+                                    "id_gerant": {
+                                        "type": "string"
+                                    },
+                                    "type_logement": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "largeur": {
+                                        "type": "string"
+                                    },
+                                    "longueur": {
+                                        "type": "string"
+                                    },
+                                    "valeur": {
+                                        "type": "string"
+                                    },
+                                    "pays": {
+                                        "type": "string"
+                                    },
+                                    "ville": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "string"
+                                    },
+                                    "quartier": {
+                                        "type": "string"
+                                    },
+                                    "rue": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Logement ajouté"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/logement/{id_logement}/changer-visibilite": {
+            "get": {
+                "tags": [
+                    "Logements"
+                ],
+                "summary": "Modifier la visibilité",
+                "description": "Permet à l'utilisateur de définir si le logement doit être visible au grand public ou non",
+                "operationId": "changeVisibility",
+                "parameters": [
+                    {
+                        "name": "id_logement",
+                        "in": "path",
+                        "description": "Identifiant du logement",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Visibilité changée"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/logement/ajouter-proprio": {
+            "post": {
+                "tags": [
+                    "Logements"
+                ],
+                "summary": "Ajouter un propiétaire de logement",
+                "description": "Dans le cas ou le gérant d'un logement n'est pas le propriétaire, il est nécessaire de renseigner des informations sur le propriétaire",
+                "operationId": "addProprio",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_gerant",
+                                    "id_logement",
+                                    "nom",
+                                    "telephone",
+                                    "email",
+                                    "sexe"
+                                ],
+                                "properties": {
+                                    "id_gerant": {
+                                        "type": "string"
+                                    },
+                                    "id_logement": {
+                                        "type": "string"
+                                    },
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "telephone": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "date_naissance": {
+                                        "type": "string"
+                                    },
+                                    "sexe": {
+                                        "type": "string"
+                                    },
+                                    "profession": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Propriétaire ajouté au logement"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
+}

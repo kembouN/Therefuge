@@ -28,7 +28,7 @@ class SendVerificationCode extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Vérification de compte',
+            subject: 'Vous avez du nouveau🥳',
         );
     }
 

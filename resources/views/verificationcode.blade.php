@@ -70,43 +70,74 @@
             margin-left: 5%;
         }
 
+        .alerte{
+            color: yellow;
+            font-weight: bold;
+        }
+
     </style>
 
 </head>
 <body>
     <div class="ensemble">
         <header class="titre">
-            Nous vérifions si c'est bien vous
+            @if($mailData['subject'] == 'verification')
+                Nous vérifions si c'est bien vous
+            @elseif($mailData['subject'] == 'reinitialisation')
+                Votre mot de passe est renouvellé
+            @endif
         </header>
         
         <section class="mail_content">
 
             <header class="entete_section">
                 <p>
-                    <span class="titre_code">Votre code de vérification:</span>
+                    <span class="titre_code">
+
+                        @if($mailData['subject'] == 'verification')
+                            Votre code de vérification:
+                        @elseif($mailData['subject'] == 'reinitialisation')
+                            Votre nouveau mot de passe:
+                        @endif
+
+                    </span>
                     <br>
                     <br> 
-                    <span class="code">{{$mailData['user']->trust_email}}</span>
+                    <span class="code">
+                        @if($mailData['subject'] == 'verification')
+                            {{$mailData['code_verifcation']}}
+                        @elseif($mailData['subject'] == 'reinitialisation')
+                            {{$mailData['passe']}}
+                        @endif
+                    </span>
                 </p>
             </header>
 
             <div class="description">
 
-                <p>
-                    Nous sommes heureux que vous nous rejoigniez, <span>{{$mailData['username']}}</span>.
-                </p>
+                @if($mailData['subject'] == 'verification')
+                    <p>
+                        Nous sommes heureux que vous nous rejoigniez, <span>{{$mailData['nom'].' '.$mailData['prenom']}}</span>.
+                    </p>
 
-                <p>
-                    La création de votre compte nécessite une vérification de vos coordonnées à travers un code unique. Sa validité est limitée à soixante(60) minutes, vérifiez vos coordonnées dans les temps. 😉<br><br>
-                    Si vous n'êtes pas à l'origine de ce message, veuillez l'ignorer.
-                </p>
-    
+                    <p>
+                        La création de votre compte nécessite une vérification de vos coordonnées à travers un code unique de validité limitée à soixante(60) minutes, vérifiez vos coordonnées dans les temps. 😉<br><br>
+                        <span class="alerte">Si vous n'êtes pas à l'origine de ce message, veuillez l'ignorer.</span>
+                    </p>
+                @elseif($mailData['subject'] == 'reinitialisation')
+                    <p>
+                        Votre mot de passe à été réinitialisé suite à la perte du précédent et vous en obtenez un nouveau. <br><br>
+
+                        <span class="alerte">Il vous est conseillé de changer le mot de passe fournit pour en instaurer un plus robuste et dont vous vous rapellerez facilement.</span>
+                    </p>
+                @endif
+
             </div>
         </section>
 
         <footer>
             <p>
-                <a href="{{route('verifiemail', [$mailData['user']->id,$mailData['user']->trust_email])}}" class="verifier">Vérifiez votre adresse e-mail</a>
+                <a href="{{route('verifiemail', [$mailData['id_user'],$mailData['code_verifcation']])}}" class="verifier">Vérifiez votre adresse e-mail</a>
             </p>
         </footer>
     </div>
